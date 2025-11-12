@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3001";
 
 export async function getState() {
   const res = await fetch(`${API_URL}/state`);
@@ -24,4 +24,10 @@ export async function drop() {
 
 export async function reset() {
   await fetch(`${API_URL}/reset`, { method: "POST" });
+}
+
+export async function check() {
+  const res = await fetch(`${API_URL}/check`);
+  return res.json();
+
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getState, move, pickup, drop, reset } from "./api";
+import { getState, move, pickup, drop, reset, check } from "./api";
 import Grid from "./grid";
 
 export default function App() {
@@ -11,6 +11,8 @@ export default function App() {
   if (!state) return <p>Loading...</p>;
 
   const { robot, leftGrid, rightGrid } = state;
+
+  let successMessage = "";
 
   const handleMove = async (direction) => {
     await move(direction);
@@ -32,23 +34,25 @@ export default function App() {
     await refresh();
   };
 
+    const handleCheck = async () => {
+    successMessage = await check();
+    console.log(successMessage);
+    await refresh();
+  };
+
   return (
     <div style={{ padding: 30, textAlign: "center" }}>
       <h1>Stack Up</h1>
 
       <div style={{ display: "flex", justifyContent: "center", gap: 50, marginBottom: 30 }}>
         <div>
-          <h3>Left Grid</h3>
+          <h3>Challenge</h3>
           <Grid grid={leftGrid} robot={robot} side="left" />
         </div>
         <div>
-          <h3>Right Grid</h3>
+          <h3>Target</h3>
           <Grid
-            grid={rightGrid.map(col =>
-              col.slice().reverse().concat(Array(3 - col.length).fill(null))
-            )}
-            robot={robot}
-            side="right"
+            grid={rightGrid} robot={robot} side="right"
           />
         </div>
       </div>
@@ -75,6 +79,17 @@ export default function App() {
       <p style={{ marginTop: 20 }}>
         Holding: <strong>{robot.holding || "Nothing"}</strong>
       </p>
+
+      <div style={{ marginBottom: 10 }}>
+          <button onClick={() => handleCheck("check")}>CHECK SOLUTION</button>
+      </div>
+
+      <p style={{ marginTop: 20 }}>
+        Result: <strong>{successMessage}</strong>
+      </p>
+
     </div>
+
+
   );
 }
